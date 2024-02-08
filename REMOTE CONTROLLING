@@ -1,0 +1,38 @@
+import mraa
+import time
+import pyupm_i2clcd as lcd
+import pyupm_grove as grove
+
+# Initialize the temperature sensor on A0 (analog input 0)
+temp_sensor = grove.GroveTemp(0)
+
+# Initialize the heart rate sensor on D2 (digital input 2)
+heart_rate_sensor = grove.GroveHeartRate(2)
+
+# Initialize the LCD
+lcd_display = lcd.Jhd1313m1(0, 0x3E, 0x62)
+
+try:
+    while True:
+        # Read temperature value from the sensor
+        temperature = temp_sensor.value()
+        
+        # Read heart rate value from the sensor
+        heart_rate = heart_rate_sensor.value()
+        
+        # Display temperature and heart rate on the console
+        print("Temperature:", temperature, "C")
+        print("Heart Rate:", heart_rate, "BPM")
+        
+        # Display temperature and heart rate on the LCD
+        lcd_display.setCursor(0, 0)
+        lcd_display.write("Temp: " + str(temperature) + "C HR: " + str(heart_rate) + "BPM")
+        
+        # Wait for 1 second before reading again
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    # Clean up GPIO and exit
+    lcd_display.clear()
+    lcd_display.close()
+    print("\nExiting...")
